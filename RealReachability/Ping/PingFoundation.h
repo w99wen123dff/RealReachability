@@ -54,6 +54,8 @@
 #else
 #import <CoreServices/CoreServices.h>
 #endif
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #include <AssertMacros.h>
 
