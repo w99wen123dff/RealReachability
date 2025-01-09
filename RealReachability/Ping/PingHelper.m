@@ -97,9 +97,10 @@
     
     self.pingStartTime = CFAbsoluteTimeGetCurrent();
 
-    
-    self.pingFoundation = [[PingFoundation alloc] initWithHostName:self.host];
-    self.pingFoundation.delegate = self;
+    if (!self.pingFoundation) {
+        self.pingFoundation = [[PingFoundation alloc] initWithHostName:self.host];
+        self.pingFoundation.delegate = self;
+    }
     [self.pingFoundation start];
     
     [self performSelector:@selector(pingTimeOut) withObject:nil afterDelay:self.timeout];
