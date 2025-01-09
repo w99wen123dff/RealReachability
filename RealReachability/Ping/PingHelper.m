@@ -88,10 +88,17 @@
     }
 }
 
+- (void)stopPingFoundation {
+    if (self.pingFoundation)
+    {
+        [self.pingFoundation stop];
+    }
+}
+
 - (void)startPing
 {
     //NSLog(@"startPing");
-    [self clearPingFoundation];
+    [self stopPingFoundation];
     
     self.isPinging = YES;
     
@@ -108,11 +115,13 @@
 
 - (void)setHost:(NSString *)host
 {
+    if ([host isEqualToString:_host]) {
+        return;
+    }
     _host = nil;
     _host = [host copy];
     
-    self.pingFoundation.delegate = nil;
-    self.pingFoundation = nil;
+    [self clearPingFoundation];
     
     self.pingFoundation = [[PingFoundation alloc] initWithHostName:_host];
     
@@ -120,18 +129,6 @@
 }
 
 #pragma mark - inner methods
-
-- (void)doubleCheck
-{
-    [self clearPingFoundation];
-    
-    self.isPinging = YES;
-    
-    self.pingFoundation = [[PingFoundation alloc] initWithHostName:self.hostForCheck];
-    self.pingFoundation.delegate = self;
-    [self.pingFoundation start];
-    
-}
 
 - (void)endWithFlag:(BOOL)isSuccess
 {
@@ -147,7 +144,7 @@
     CFAbsoluteTime end = CFAbsoluteTimeGetCurrent();
     NSTimeInterval latency = isSuccess ? (end - self.pingStartTime) * 1000 : 0;
 
-    [self clearPingFoundation];
+    [self stopPingFoundation];
     
     @synchronized(self)
     {
@@ -196,7 +193,7 @@
     }
     
     self.isPinging = NO;
-    [self clearPingFoundation];
+    [self stopPingFoundation];
     
     @synchronized(self)
     {
